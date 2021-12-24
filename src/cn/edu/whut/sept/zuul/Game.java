@@ -42,6 +42,8 @@ public class Game {
         outside.setExit("east", theater);
         outside.setExit("south", lab);
         outside.setExit("west", pub);
+        outside.setItem("pc", 1);
+        outside.setItem("watch", 1);
 
         theater.setExit("west", outside);
 
@@ -105,6 +107,8 @@ public class Game {
             goRoom(command);
         } else if (commandWord.equals("quit")) {
             wantToQuit = quit(command);
+        } else if (commandWord.equals("look")) {
+            lookItem();
         }
         // else command not recognised.
         return wantToQuit;
@@ -146,6 +150,12 @@ public class Game {
             currentRoom = nextRoom;
             System.out.println(currentRoom.getLongDescription());
         }
+    }
+
+    private void lookItem() {
+
+        System.out.println(currentRoom.getLongDescription());
+        System.out.println(currentRoom.getItem());
     }
 
     /**
