@@ -6,7 +6,6 @@ import java.util.HashMap;
 public class Room {
     private String description;
     private HashMap<String, Room> exits;
-
     private HashMap<String, Integer> itemList;
 
     // 创建房间

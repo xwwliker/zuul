@@ -13,23 +13,31 @@
  */
 package cn.edu.whut.sept.zuul;
 
+import java.util.ArrayList;
+import java.util.Stack;
+
 public class Game {
     private Parser parser;
     private Room currentRoom;
+    private Stack<Room> path;
+    private ArrayList<Room> rooms;
 
     /**
      * 创建游戏并初始化内部数据和解析器.
      */
     public Game() {
-        createRooms();
         parser = new Parser();
+        path = new Stack<Room>();
+        rooms = new ArrayList<Room>();
+        createRooms();
+
     }
 
     /**
      * 创建所有房间对象并连接其出口用以构建迷宫.
      */
     private void createRooms() {
-        Room outside, theater, pub, lab, office;
+        Room outside, theater, pub, lab, office, random;
 
         // create the rooms
         outside = new Room("outside the main entrance of the university");
@@ -37,7 +45,7 @@ public class Game {
         pub = new Room("in the campus pub");
         lab = new Room("in a computing lab");
         office = new Room("in the computing admin office");
-
+        random = new Room("in the random room ");
         // initialise room exits
         outside.setExit("east", theater);
         outside.setExit("south", lab);
@@ -46,6 +54,7 @@ public class Game {
         outside.setItem("watch", 1);
 
         theater.setExit("west", outside);
+        theater.setExit("east", random);
 
         pub.setExit("east", outside);
 
@@ -55,6 +64,14 @@ public class Game {
         office.setExit("west", lab);
 
         currentRoom = outside; // start game outside
+
+        // 把房间添加到rooms
+        rooms.add(outside);
+        rooms.add(theater);
+        rooms.add(pub);
+        rooms.add(lab);
+        rooms.add(office);
+        rooms.add(random);
     }
 
     /**
@@ -109,6 +126,8 @@ public class Game {
             wantToQuit = quit(command);
         } else if (commandWord.equals("look")) {
             lookItem();
+        } else if (commandWord.equals("back")) {
+            backRoom();
         }
         // else command not recognised.
         return wantToQuit;
@@ -143,10 +162,12 @@ public class Game {
 
         // Try to leave current room.
         Room nextRoom = currentRoom.getExit(direction);
-
         if (nextRoom == null) {
             System.out.println("There is no door!");
+        } else if (nextRoom == rooms.get(5)) {
+            randomToRoom();
         } else {
+            path.push(currentRoom);
             currentRoom = nextRoom;
             System.out.println(currentRoom.getLongDescription());
         }
@@ -156,6 +177,29 @@ public class Game {
 
         System.out.println(currentRoom.getLongDescription());
         System.out.println(currentRoom.getItem());
+    }
+
+    private void backRoom() {
+        currentRoom = path.peek();
+        path.pop();
+        System.out.println("go back successful!");
+        System.out.println(currentRoom.getLongDescription());
+    }
+
+    private void randomToRoom() {
+        currentRoom = rooms.get(5);
+        System.out.println(currentRoom.getLongDescription());
+        while (true) {
+            int randomNumber = (int) Math.floor(Math.random() * 10);
+            if (randomNumber < 5) {
+                currentRoom = rooms.get(randomNumber);
+                path.push(currentRoom);
+                System.out.println("random to other room successful!");
+                System.out.println(currentRoom.getLongDescription());
+                break;
+            }
+        }
+
     }
 
     /**
